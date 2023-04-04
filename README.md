@@ -3,7 +3,15 @@ Project created for Jaya's entrance examination.
 Currency Converter
 
 This project was created for Jaya's entrance examination.
-Instructions
+It is a simple software that uses a pre-built api to calculate monetary values in different coins.
+It is built using the classical MVC architecture.
+
+#Tech Stack:
+Java 17
+Spring Boot
+H2 embedded database
+
+#Instructions
 
     1) Start the Spring Boot application by running the main class of the project.
     2) Open a web browser or an HTTP client tool like Postman.
