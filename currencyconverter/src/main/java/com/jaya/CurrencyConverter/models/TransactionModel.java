@@ -1,17 +1,22 @@
 package com.jaya.CurrencyConverter.models;
 
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
+import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 
+import java.text.SimpleDateFormat;
 import java.time.Instant;
+import java.util.Date;
 
-
+@Data
 @Entity
 @Table(name = "transaction")
 @NoArgsConstructor
+@JsonIgnoreProperties(value = {"success", "query", "info"})
 public class TransactionModel {
 
     @Id
@@ -19,7 +24,7 @@ public class TransactionModel {
     private long transactionId;
     private long userId = 1;
     @JsonProperty("date")
-    private Instant date = Instant.now();
+    private Date date;
     @JsonProperty("rate")
     private double rate;
     @JsonProperty("amount")
@@ -29,14 +34,16 @@ public class TransactionModel {
     private String to;
     @JsonProperty("result")
     private double result;
+    @JsonProperty("timestamp")
+    private float timestamp;
 
-    @Autowired
-    public TransactionModel(long transactionId, double rate, double amount, String to, double result) {
+    public TransactionModel(long transactionId, String to, String from, double amount, double rate) {
         this.transactionId = transactionId;
-        this.rate = rate;
-        this.amount = amount;
         this.to = to;
-        this.result = result;
+        this.from = from;
+        this.amount = amount;
+        this.rate = rate;
+        this.result = amount*rate;
     }
 }
 

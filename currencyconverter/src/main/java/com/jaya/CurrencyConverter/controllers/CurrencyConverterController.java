@@ -12,7 +12,7 @@ import java.io.IOException;
 import java.util.Optional;
 
 @RestController
-@RequestMapping(path = "/currencyconverter")
+//@RequestMapping(path = "/currencyconverter")
 public class CurrencyConverterController {
 
     private final CurrencyConverterService currencyConverterService;

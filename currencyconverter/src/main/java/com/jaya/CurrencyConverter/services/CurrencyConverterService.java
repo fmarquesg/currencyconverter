@@ -12,6 +12,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
+import java.sql.Array;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.Optional;
 
 @Service
@@ -21,11 +24,15 @@ public class CurrencyConverterService {
     @Autowired
     CurrencyConverterRepository currencyConverterRepository;
 
+    private Date convertDate(float timestamp){
+        SimpleDateFormat formatter= new SimpleDateFormat("yyyy-MM-dd 'at' HH:mm:ss z");
+        Date date = new Date(System.currentTimeMillis());
+        return date;
+    }
+
     public void convertCoinValueAToCoinValueB(String coin, String amount) throws IOException {
 
         OkHttpClient client = new OkHttpClient().newBuilder().build();
-        String regexError4XX = "4\\d{4}";
-        String regexError5XX = "5\\d{5}";
 
         Request request = new Request.Builder()
                 .url("https://api.apilayer.com/exchangerates_data/convert?to=EUR&from=" + coin + "&amount=" + amount)
@@ -33,12 +40,15 @@ public class CurrencyConverterService {
                 .build();
         Response response = client.newCall(request).execute();
 
+        char[] errorCode = Integer.toString(response.code()).toCharArray();
+
         try {
-            if (response.code() != Integer.parseInt(regexError4XX) && response.code() != Integer.parseInt(regexError5XX)) {
+            if (Character.getNumericValue(errorCode[0]) != 4 && Character.getNumericValue(errorCode[0]) != 5) {
                 TransactionModel filledTransactionModel;
                 ObjectMapper objectMapper = new ObjectMapper();
 
                 filledTransactionModel = objectMapper.readValue(response.body().string(), TransactionModel.class);
+                filledTransactionModel.setDate(convertDate(filledTransactionModel.getTimestamp()));
                 currencyConverterRepository.save(filledTransactionModel);
                 System.out.println("Data from latest transaction = \n" + response.body().toString());
             } else {
@@ -73,6 +83,7 @@ public class CurrencyConverterService {
         }
         return Optional.empty();
     }
+
 }
 
 
